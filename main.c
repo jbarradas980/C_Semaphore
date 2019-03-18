@@ -54,7 +54,7 @@ void escritor (int j){
 	for (int m=0; m<10; m++){
 		sleep(5);
 		sem_post(sem_mutex);
-			if (let_acce != 0 || escribiendo == TRUE){
+			if (lec_acce != 0 || escribiendo == TRUE){
 				cont_esc = cont_esc +1;
 				sem_wait(&sem_mutex);
 				sem_post(&sem_esc);
@@ -70,7 +70,7 @@ void escritor (int j){
 		if (cont_lec != 0)
 			sem_wait(&sem_lec);
 		else{
-			if(count_esc != 0)
+			if(cont_esc != 0)
 				sem_wait(&sem_esc);
 			else
 				sem_wait(&sem_mutex);
@@ -79,6 +79,7 @@ void escritor (int j){
 }//Termina función escritor
 
 void main (void){
+	int i;
 	/*Inicializamos el generador de números aleatorio*/
 	srand((unsigned) getpid());
 	/*Cantidad de lectores y escritores*/
@@ -89,7 +90,7 @@ void main (void){
 	long lids[NUM_LEC];
 	long eids[NUM_ESC];
 	//sem_mutex	= 1;
-	sem_init(&mutex,0,1);
+	sem_init(&sem_mutex,0,1);
 	//sem_esc	= 0;
 	sem_init(&sem_esc,0,1);
 	//sem_lec	= 0;
