@@ -4,6 +4,7 @@
 /*
  * Fecha de creación: 18 de marzo del 2019
  * Descripción: Implementación de solución general al problema de los lectores y escritores usando hilos en Linux.
+ * Para copilar gcc -o ./ejecutable main.c -lpthread
  */
 
 #define TRUE 1
@@ -39,7 +40,7 @@ void lector(int i) {
 		}
 		/* Accediendo a la BD */
 		printf("Lector %d leyendo BD = %d\n", i, BD);
-		sem_post(sem_mutex);
+		sem_post(&sem_mutex);
 			lec_acce = lec_acce-1;
 			if (lec_acce == 0 && cont_esc !=  0)
 				sem_wait(&sem_esc);
@@ -53,7 +54,7 @@ void lector(int i) {
 void escritor (int j){
 	for (int m=0; m<10; m++){
 		sleep(5);
-		sem_post(sem_mutex);
+		sem_post(&sem_mutex);
 			if (lec_acce != 0 || escribiendo == TRUE){
 				cont_esc = cont_esc +1;
 				sem_wait(&sem_mutex);
@@ -79,7 +80,6 @@ void escritor (int j){
 }//Termina función escritor
 
 void main (void){
-	int i;
 	/*Inicializamos el generador de números aleatorio*/
 	srand((unsigned) getpid());
 	/*Cantidad de lectores y escritores*/
@@ -101,6 +101,7 @@ void main (void){
 	lec_acce	= 0;
 	escribiendo 	= FALSE;
 	BD=0;
+	int i;
 	/* Creamos los hilos para los lectores */
 	for (i=0; i<nl; i++){
 		lids[i] =(long)i;
@@ -119,23 +120,15 @@ void main (void){
 		}
 	}
 	/* Espera la terminación de los hilos lectores */
-	for (i=0;1<ne;i++){
+	
+	for (i=0;i<ne;i++){
 		pthread_join(tidsl[i], NULL);
+		//printf("Proceso de depuración (sl): %d", i);
 	}
-	/* Espera la terminación de los hilos escritores */
-	for (i=0;1<nl;i++){
+	// Espera la terminación de los hilos escritores 
+	for (i=0;i<nl;i++){
 		pthread_join(tidse[i], NULL);
+		//printf("Proceso de depuración (se): %d", i);
 	}
-	/*
-	//cobegin{
-	lector (0);
-	lector (1);
-	lector (2);
-	lector (3);
-	escritor (0);
-	escritor (1);
-	escritor (2);
-	escritor (3);
-	//}
-	*/
+	printf("Termina el programa...");
 }
